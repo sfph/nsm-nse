@@ -92,7 +92,7 @@ function performNSE() {
   sleep 10
   if [[ ${OPERATION} != delete ]]; then
     echo "Waiting for kiknos job responder-cfg-job to be complete:"
-    kubectl wait --context "$cluster" -n default --timeout=150s --for condition=complete job/responder-cfg-job || {
+    kubectl wait --context "$cluster" -n default --timeout=300s --for condition=complete job/responder-cfg-job || {
       ec=$?
       echo "kubectl wait for responder-cfg-job to complete  failed, returned code ${ec}."
     }
@@ -111,7 +111,7 @@ function performNSE() {
         exit ${ec}
     fi
   }
-  kubectl --context "$cluster" wait -n default --timeout=150s --for ${CONDITION} --all pods -l networkservicemesh.io/app=${SERVICE_NAME} || {
+  kubectl --context "$cluster" wait -n default --timeout=300s --for ${CONDITION} --all pods -l networkservicemesh.io/app=${SERVICE_NAME} || {
     ec=$?
     if [[ ${OPERATION} != delete ]]; then
       echo "kubectl wait failed, returned code ${ec}.  Gathering data"
