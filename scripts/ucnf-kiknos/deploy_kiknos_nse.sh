@@ -95,6 +95,7 @@ function performNSE() {
     kubectl wait --context "$cluster" -n default --timeout=300s --for condition=complete job/responder-cfg-job || {
       ec=$?
       echo "kubectl wait for responder-cfg-job to complete  failed, returned code ${ec}."
+      kubectl get pods -A --context "${cluster}"
     }
   fi
 
