@@ -5,6 +5,10 @@ SERVICE_NAME=${SERVICE_NAME:-hello-world}
 ISTIO_CLIENT=${ISTIO_CLIENT:-false}
 OPERATION=${OPERATION:-apply}
 
+# Selina tmp
+WCM_SYSTEM_DIR=${WCM_SYSTEM_DIR:-"${GOPATH}/src/github.com/cisco-app-networking/wcm-system"}
+
+
 pushd "$(dirname "$0")/../../"
 
 print_usage() {
@@ -59,7 +63,8 @@ if [[ "$ISTIO_CLIENT" == "true" ]]; then
   kubectl --context "$CLUSTER" wait -n istio-system --timeout=500s --for condition=Ready --all pods || {
     ec=$?
     echo "kubectl wait failed, returned code ${ec}.  Gathering data"
-    kubectl cluster-info dump --context "${CLUSTER}" --all-namespaces --output-directory=/tmp/error_logs_istio_ingress/
+    ${WCM_SYSTEM_DIR}/system_topo/jenkins/dump_state.sh \
+        --logdir="${WCM_SYSTEM_DIR}/logs/error_logs_istio_ingress"
     kubectl get pods -A --context "${CLUSTER}"
     exit ${ec}
   }
@@ -81,7 +86,8 @@ kubectl wait --context "$CLUSTER" -n default --timeout=150s --for ${CONDITION} -
     ec=$?
     if [[ ${CONDITION} == "condition=Ready" ]]; then
         echo "kubectl wait for condition ${CONDITION} failed, returned code ${ec}.  Gathering data"
-        kubectl cluster-info dump --context "${CLUSTER}" --all-namespaces --output-directory=/tmp/error_logs_dep_clients_app/
+        ${WCM_SYSTEM_DIR}/system_topo/jenkins/dump_state.sh \
+            --logdir="${WCM_SYSTEM_DIR}/logs/error_logs_dep_clients_app"
         kubectl get pods -A --context "${CLUSTER}"
         kubectl describe pod --context "${CLUSTER}" -l "app=$SERVICE_NAME" -n=default
         exit ${ec}

@@ -53,8 +53,8 @@ for hello in $(kubectl --context "$CLUSTER2" get pods -l app="$SERVICE" -o=name)
     kubectl --context "$CLUSTER2" exec "$hello" -c helloworld -- curl -s "http://$ip:5000/hello" || {
         ec=$?
         echo "curl failed, returning code: ${ec}.  Gathering data"
-        kubectl cluster-info dump --all-namespaces --context "$CLUSTER1" --output-directory=/tmp/error_logs_test_vpn/"${CLUSTER1}"/
-        kubectl cluster-info dump --all-namespaces --context "$CLUSTER2" --output-directory=/tmp/error_logs_test_vpn/"${CLUSTER2}"/
+        ${WCM_SYSTEM_DIR}/system_topo/jenkins/dump_state.sh \
+            --logdir="${WCM_SYSTEM_DIR}/logs/error_logs_test_vpn"
         free -hw
         top -n1 -b | head -20
         echo "Pods in ${CLUSTER1}"

@@ -105,7 +105,8 @@ function performNSE() {
     ec=$?
     if [[ ${OPERATION} != delete ]]; then
         echo "kubectl wait for ${CONDITION} failed, returned code ${ec}.  Gathering data"
-        kubectl cluster-info dump --all-namespaces --context "${cluster}" --output-directory=/tmp/error_logs_kiknos_etcd/
+        ${WCM_SYSTEM_DIR}/system_topo/jenkins/dump_state.sh \
+            --logdir="${WCM_SYSTEM_DIR}/logs/error_logs_kiknos_etcd"
         kubectl get pods -A --context "${cluster}"
         kubectl describe pod --context "${cluster}" \
             -l k8s-app=kiknos-etcd -n=default
@@ -116,7 +117,8 @@ function performNSE() {
     ec=$?
     if [[ ${OPERATION} != delete ]]; then
       echo "kubectl wait failed, returned code ${ec}.  Gathering data"
-      kubectl cluster-info dump --all-namespaces --output-directory=/tmp/error_logs_nsm_io/
+      ${WCM_SYSTEM_DIR}/system_topo/jenkins/dump_state.sh \
+          --logdir="${WCM_SYSTEM_DIR}/logs/error_logs_nsm_io"
       kubectl get pods -A --context "${cluster}"
       kubectl describe pod --context "${cluster}" \
           -l networkservicemesh.io/app=${SERVICE_NAME} -n=default

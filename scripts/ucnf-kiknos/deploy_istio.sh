@@ -41,7 +41,8 @@ sleep 2
 kubectl --context "$CLUSTER" wait -n istio-system --timeout=150s --for condition=Ready --all pods || {
     ec=$?
     echo "kubectl wait failed, returned code ${ec}.  Gathering data"
-    kubectl cluster-info dump --all-namespaces --context "${CLUSTER}" --output-directory=/tmp/error_logs_istio_cfg/
+    ${WCM_SYSTEM_DIR}/system_topo/jenkins/dump_state.sh \
+        --logdir="${WCM_SYSTEM_DIR}/logs/error_logs_istio_cfg"
     kubectl get pods -A --context "${CLUSTER}"
     kubectl describe pod --context "${CLUSTER}" -n=istio-system
     exit ${ec}
